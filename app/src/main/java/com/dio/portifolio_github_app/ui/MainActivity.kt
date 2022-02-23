@@ -4,16 +4,24 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.widget.SearchView
+import androidx.lifecycle.ViewModel
 import com.dio.portifolio_github_app.R
 import com.dio.portifolio_github_app.databinding.ActivityMainBinding
+import com.dio.portifolio_github_app.presentation.MainViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
     private val binding by  lazy { ActivityMainBinding.inflate(layoutInflater) }
+    private val viewModel by viewModel<MainViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
+
+        viewModel.repos.observe(this){
+
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
