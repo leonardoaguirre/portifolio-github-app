@@ -1,6 +1,8 @@
 package com.dio.portifolio_github_app.data.di
 
 import android.util.Log
+import com.dio.portifolio_github_app.data.repository.RepoRepository
+import com.dio.portifolio_github_app.data.repository.RepoRepositoryImpl
 import com.dio.portifolio_github_app.data.service.GithubService
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
@@ -15,7 +17,7 @@ object DataModule {
     private const val OK_HTTP = "OK HTTP"
 
     fun load(){
-        loadKoinModules(networkModules())
+        loadKoinModules(networkModules() + reposModule())
     }
     private fun networkModules() : Module{
         return  module {
@@ -35,6 +37,12 @@ object DataModule {
             single {
                 createService<GithubService>(get(),get())
             }
+        }
+    }
+
+    private fun reposModule() : Module{
+        return module {
+            single<RepoRepository>{RepoRepositoryImpl(get())}
         }
     }
     private inline fun <reified T> createService(client: OkHttpClient, factory: GsonConverterFactory) : T{
