@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
-import java.lang.Error
 
 class MainViewModel(
     private val listUserRepositoryUseCase: ListUserRepositoryUseCase
@@ -31,7 +30,6 @@ class MainViewModel(
                 .collect {
                     _repos.postValue(State.Success(it))
                 }
-
         }
     }
     sealed class State{

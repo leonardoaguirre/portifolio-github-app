@@ -6,12 +6,17 @@ import android.view.Menu
 import android.widget.SearchView
 import androidx.lifecycle.ViewModel
 import com.dio.portifolio_github_app.R
+import com.dio.portifolio_github_app.core.createDialog
+import com.dio.portifolio_github_app.core.createProgressDialog
+import com.dio.portifolio_github_app.core.hideSoftKeyboard
 import com.dio.portifolio_github_app.databinding.ActivityMainBinding
 import com.dio.portifolio_github_app.presentation.MainViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
+    private val dialog by lazy { createProgressDialog() }
     private val binding by  lazy { ActivityMainBinding.inflate(layoutInflater) }
+    private val adapter by lazy { RepoListAdapter() }
     private val viewModel by viewModel<MainViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,8 +24,23 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
 
-        viewModel.repos.observe(this){
+        binding.rvRepos.adapter = adapter
 
+        viewModel.getRepoList("leonardoaguirre")
+        viewModel.repos.observe(this){
+            when(it){
+                MainViewModel.State.Loading -> dialog.show()
+                is MainViewModel.State.Success -> {
+                    dialog.dismiss()
+                    adapter.submitList(it.list)
+                }
+                is MainViewModel.State.Error -> {
+                    dialog.dismiss()
+                    createDialog {
+                        setMessage(it.error.message)
+                    }.show()
+                }
+            }
         }
     }
 
@@ -31,11 +51,13 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
         return super.onCreateOptionsMenu(menu)
     }
 
-    override fun onQueryTextSubmit(p0: String?): Boolean {
-        TODO("Not yet implemented")
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        query?.let { viewModel.getRepoList(it) }
+        binding.root.hideSoftKeyboard()
+        return true
     }
 
-    override fun onQueryTextChange(p0: String?): Boolean {
+    override fun onQueryTextChange(newText: String?): Boolean {
         TODO("Not yet implemented")
     }
 }
