@@ -2,9 +2,9 @@ package com.dio.portifolio_github_app.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
-import android.widget.SearchView
-import androidx.lifecycle.ViewModel
+import androidx.appcompat.widget.SearchView
 import com.dio.portifolio_github_app.R
 import com.dio.portifolio_github_app.core.createDialog
 import com.dio.portifolio_github_app.core.createProgressDialog
@@ -13,7 +13,7 @@ import com.dio.portifolio_github_app.databinding.ActivityMainBinding
 import com.dio.portifolio_github_app.presentation.MainViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
+class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener{
     private val dialog by lazy { createProgressDialog() }
     private val binding by  lazy { ActivityMainBinding.inflate(layoutInflater) }
     private val adapter by lazy { RepoListAdapter() }
@@ -26,7 +26,6 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
 
         binding.rvRepos.adapter = adapter
 
-        viewModel.getRepoList("leonardoaguirre")
         viewModel.repos.observe(this){
             when(it){
                 MainViewModel.State.Loading -> dialog.show()
@@ -42,11 +41,13 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
                 }
             }
         }
+
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main_menu,menu)
-        val searchView =  menu?.findItem(R.id.action_search)?.actionView as SearchView
+        val searchView =  menu.findItem(R.id.action_search)?.actionView as SearchView
         searchView.setOnQueryTextListener(this)
         return super.onCreateOptionsMenu(menu)
     }
@@ -58,6 +59,11 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
     }
 
     override fun onQueryTextChange(newText: String?): Boolean {
-        TODO("Not yet implemented")
+        Log.i(TAG, "onQueryTextChange: $newText")
+        return false
+    }
+
+    companion object {
+        private const val TAG = "TAG"
     }
 }
